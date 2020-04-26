@@ -1,4 +1,6 @@
+import 'package:covid_19/API/consume.dart';
 import 'package:covid_19/constant.dart';
+import 'package:covid_19/model/data_covid.dart';
 import 'package:covid_19/widgets/counter.dart';
 import 'package:covid_19/widgets/my_header.dart';
 import 'package:flutter/material.dart';
@@ -31,7 +33,15 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   final controller = ScrollController();
+  Consume consume = Consume();
   double offset = 0;
+  int infectados = 0;
+  int muertes = 0;
+  int recuperados = 0;
+  var paisActual = "Ecuador";
+  var image = "";
+  List<DropdownMenuItem> paises;
+  List<DataCovid> dataCovid;
 
   @override
   void initState() {
@@ -53,6 +63,22 @@ class _HomeScreenState extends State<HomeScreen> {
     });
   }
 
+  Future _cargarData() async {
+    paises = [];
+    dataCovid = [];
+    List<DropdownMenuItem> paisesAux = [];
+    List<DataCovid> aux= await consume.loadCountries();
+    for(int i=0;i<aux.length;i++) {
+      var dataCovid = aux[i];
+      paisesAux.add(DropdownMenuItem(
+        child: Text(dataCovid.country),
+        value: dataCovid.country,
+      ));
+    }
+    paises = paisesAux;
+    dataCovid = aux;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -62,8 +88,8 @@ class _HomeScreenState extends State<HomeScreen> {
           children: <Widget>[
             MyHeader(
               image: "assets/icons/Drcorona.svg",
-              textTop: "All you need",
-              textBottom: "is stay at home.",
+              textTop: "Quedate",
+              textBottom: "en Casa.",
               offset: offset,
             ),
             Container(
@@ -83,24 +109,44 @@ class _HomeScreenState extends State<HomeScreen> {
                   SvgPicture.asset("assets/icons/maps-and-flags.svg"),
                   SizedBox(width: 20),
                   Expanded(
-                    child: DropdownButton(
-                      isExpanded: true,
-                      underline: SizedBox(),
-                      icon: SvgPicture.asset("assets/icons/dropdown.svg"),
-                      value: "Indonesia",
-                      items: [
-                        'Indonesia',
-                        'Bangladesh',
-                        'United States',
-                        'Japan'
-                      ].map<DropdownMenuItem<String>>((String value) {
-                        return DropdownMenuItem<String>(
-                          value: value,
-                          child: Text(value),
-                        );
-                      }).toList(),
-                      onChanged: (value) {},
-                    ),
+                    child: FutureBuilder(
+                      future: _cargarData(),
+                      builder: (context, snapshot){
+                        switch(snapshot.connectionState){
+                          case ConnectionState.none:
+                            // TODO: Handle this case.
+                            break;
+                          case ConnectionState.waiting:
+                            // TODO: Handle this case.
+                            break;
+                          case ConnectionState.active:
+                            // TODO: Handle this case.
+                            break;
+                          case ConnectionState.done:
+                            // TODO: Handle this case.
+                            return DropdownButton(
+                              items: paises,
+                              onChanged: (value) {
+                                setState(() {
+                                  paisActual = value;
+                                  var aux = dataCovid.singleWhere((data) => data.country == paisActual);
+                                  infectados = aux.cases;
+                                  muertes = aux.deaths;
+                                  recuperados = aux.recovered;
+                                  image = aux.flag;
+                                });
+                              },
+                              value: paisActual,
+                              isExpanded: false,
+                              underline: SizedBox(),
+                              hint: Text("Select"),
+                              icon: SvgPicture.asset("assets/icons/dropdown.svg"),
+                            );
+                            break;
+                        }
+                        return Container();
+                      },
+                    )
                   ),
                 ],
               ),
@@ -110,35 +156,6 @@ class _HomeScreenState extends State<HomeScreen> {
               padding: EdgeInsets.symmetric(horizontal: 20),
               child: Column(
                 children: <Widget>[
-                  Row(
-                    children: <Widget>[
-                      RichText(
-                        text: TextSpan(
-                          children: [
-                            TextSpan(
-                              text: "Case Update\n",
-                              style: kTitleTextstyle,
-                            ),
-                            TextSpan(
-                              text: "Newest update March 28",
-                              style: TextStyle(
-                                color: kTextLightColor,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      Spacer(),
-                      Text(
-                        "See details",
-                        style: TextStyle(
-                          color: kPrimaryColor,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                    ],
-                  ),
-                  SizedBox(height: 20),
                   Container(
                     padding: EdgeInsets.all(20),
                     decoration: BoxDecoration(
@@ -157,38 +174,21 @@ class _HomeScreenState extends State<HomeScreen> {
                       children: <Widget>[
                         Counter(
                           color: kInfectedColor,
-                          number: 1046,
-                          title: "Infected",
+                          number: infectados,
+                          title: "Infectados",
                         ),
                         Counter(
                           color: kDeathColor,
-                          number: 87,
-                          title: "Deaths",
+                          number: muertes,
+                          title: "Muertes",
                         ),
                         Counter(
                           color: kRecovercolor,
-                          number: 46,
-                          title: "Recovered",
+                          number: recuperados,
+                          title: "Recuperados",
                         ),
                       ],
                     ),
-                  ),
-                  SizedBox(height: 20),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: <Widget>[
-                      Text(
-                        "Spread of Virus",
-                        style: kTitleTextstyle,
-                      ),
-                      Text(
-                        "See details",
-                        style: TextStyle(
-                          color: kPrimaryColor,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                    ],
                   ),
                   Container(
                     margin: EdgeInsets.only(top: 20),
@@ -206,10 +206,9 @@ class _HomeScreenState extends State<HomeScreen> {
                         ),
                       ],
                     ),
-                    child: Image.asset(
-                      "assets/images/map.png",
-                      fit: BoxFit.contain,
-                    ),
+                    child: image.isNotEmpty ? Image.network(
+                      image,
+                    ) : Container()
                   ),
                 ],
               ),

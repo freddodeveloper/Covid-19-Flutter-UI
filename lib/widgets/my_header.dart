@@ -22,8 +22,8 @@ class _MyHeaderState extends State<MyHeader> {
     return ClipPath(
       clipper: MyClipper(),
       child: Container(
-        padding: EdgeInsets.only(left: 40, top: 50, right: 20),
-        height: 350,
+        padding: EdgeInsets.only(left: 40, top: 30, right: 20),
+        height: 270,
         width: double.infinity,
         decoration: BoxDecoration(
           gradient: LinearGradient(
@@ -68,8 +68,8 @@ class _MyHeaderState extends State<MyHeader> {
                     ),
                   ),
                   Positioned(
-                    top: 20 - widget.offset / 2,
-                    left: 150,
+                    top: 10 - widget.offset / 2,
+                    left: 180,
                     child: Text(
                       "${widget.textTop} \n${widget.textBottom}",
                       style: kHeadingTextStyle.copyWith(

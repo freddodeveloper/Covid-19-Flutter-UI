@@ -42,8 +42,8 @@ class _InfoScreenState extends State<InfoScreen> {
           children: <Widget>[
             MyHeader(
               image: "assets/icons/coronadr.svg",
-              textTop: "Get to know",
-              textBottom: "About Covid-19.",
+              textTop: "Enterate",
+              textBottom: "Acerca del\nCovid-19.",
               offset: offset,
             ),
             Padding(
@@ -52,7 +52,7 @@ class _InfoScreenState extends State<InfoScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
                   Text(
-                    "Symptoms",
+                    "Síntomas",
                     style: kTitleTextstyle,
                   ),
                   SizedBox(height: 20),
@@ -63,34 +63,37 @@ class _InfoScreenState extends State<InfoScreen> {
                       children: <Widget>[
                         SymptomCard(
                           image: "assets/images/headache.png",
-                          title: "Headache",
+                          title: "Dolor de Cabeza",
                           isActive: true,
                         ),
                         SymptomCard(
                           image: "assets/images/caugh.png",
-                          title: "Caugh",
+                          title: "Tos Seca",
                         ),
                         SymptomCard(
                           image: "assets/images/fever.png",
-                          title: "Fever",
+                          title: "Fiebre",
                         ),
                       ],
                     ),
                   ),
                   SizedBox(height: 20),
-                  Text("Prevention", style: kTitleTextstyle),
+                  Text("Prevenciones", style: kTitleTextstyle),
                   SizedBox(height: 20),
                   PreventCard(
-                    text:
-                        "Since the start of the coronavirus outbreak some places have fully embraced wearing facemasks",
-                    image: "assets/images/wear_mask.png",
-                    title: "Wear face mask",
+                    title: "Lavate tus manos",
                   ),
                   PreventCard(
-                    text:
-                        "Since the start of the coronavirus outbreak some places have fully embraced wearing facemasks",
-                    image: "assets/images/wash_hands.png",
-                    title: "Wash your hands",
+                    title: "Mantener distancia",
+                  ),
+                  PreventCard(
+                    title: "Evite tocarse los ojos, la nariz \ny la boca",
+                  ),
+                  PreventCard(
+                    title: "Si presenta sintomas\npermanezca en casa",
+                  ),
+                  PreventCard(
+                    title: "Mantener una buena higiene\nde las vías respiratorias",
                   ),
                   SizedBox(height: 50),
                 ],
@@ -104,14 +107,10 @@ class _InfoScreenState extends State<InfoScreen> {
 }
 
 class PreventCard extends StatelessWidget {
-  final String image;
   final String title;
-  final String text;
   const PreventCard({
     Key key,
-    this.image,
     this.title,
-    this.text,
   }) : super(key: key);
 
   @override
@@ -119,61 +118,47 @@ class PreventCard extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.only(bottom: 10),
       child: SizedBox(
-        height: 156,
-        child: Stack(
-          alignment: Alignment.centerLeft,
-          children: <Widget>[
-            Container(
-              height: 136,
-              width: double.infinity,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(20),
-                color: Colors.white,
-                boxShadow: [
-                  BoxShadow(
-                    offset: Offset(0, 8),
-                    blurRadius: 24,
-                    color: kShadowColor,
-                  ),
-                ],
-              ),
+        height: 80,
+        child: Container(
+          height: 70,
+          width: double.infinity,
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(20),
+            border: Border.all(
+              color: kShadowColor,
+              width: 2
             ),
-            Image.asset(image),
-            Positioned(
-              left: 130,
-              child: Container(
-                padding: EdgeInsets.symmetric(horizontal: 20, vertical: 15),
-                height: 136,
-                width: MediaQuery.of(context).size.width - 170,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: <Widget>[
-                    Text(
-                      title,
-                      style: kTitleTextstyle.copyWith(
-                        fontSize: 16,
-                      ),
-                    ),
-                    Expanded(
-                      child: Text(
-                        text,
-                        maxLines: 4,
-                        overflow: TextOverflow.ellipsis,
-                        style: TextStyle(
-                          fontSize: 12,
-                        ),
-                      ),
-                    ),
-                    Align(
-                      alignment: Alignment.topRight,
-                      child: SvgPicture.asset("assets/icons/forward.svg"),
-                    ),
-                  ],
+            color: Colors.white,
+            boxShadow: [
+              BoxShadow(
+                offset: Offset(0, 8),
+                blurRadius: 24,
+                color: kShadowColor,
+              ),
+            ],
+          ),
+          child: Stack(
+            //crossAxisAlignment: CrossAxisAlignment.center,
+            //mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              Center(
+                child: Text(
+                  title,
+                  style: kTitleTextstyle.copyWith(
+                    fontSize: 16,
+                  ),
+                  textAlign: TextAlign.center,
                 ),
               ),
-            ),
-          ],
+              Align(
+                alignment: Alignment.centerRight,
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: SvgPicture.asset("assets/icons/forward.svg",height: 25.0,),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
