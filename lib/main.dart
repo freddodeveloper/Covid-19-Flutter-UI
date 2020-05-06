@@ -32,7 +32,7 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  final controller = ScrollController();
+  //final controller = ScrollController();
   Consume consume = Consume();
   double offset = 0;
   int infectados = 0;
@@ -47,21 +47,21 @@ class _HomeScreenState extends State<HomeScreen> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    controller.addListener(onScroll);
+    //controller.addListener(onScroll);
   }
 
   @override
   void dispose() {
     // TODO: implement dispose
-    controller.dispose();
+    //controller.dispose();
     super.dispose();
   }
 
-  void onScroll() {
+  /*void onScroll() {
     setState(() {
       offset = (controller.hasClients) ? controller.offset : 0;
     });
-  }
+  }*/
 
   Future _cargarData() async {
     paises = [];
@@ -82,139 +82,136 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: SingleChildScrollView(
-        controller: controller,
-        child: Column(
-          children: <Widget>[
-            MyHeader(
-              image: "assets/icons/Drcorona.svg",
-              textTop: "Quedate",
-              textBottom: "en Casa.",
-              offset: offset,
+      body: Column(
+        children: <Widget>[
+          MyHeader(
+            image: "assets/icons/Drcorona.svg",
+            textTop: "Quedate",
+            textBottom: "en Casa.",
+            offset: offset,
+          ),
+          Container(
+            margin: EdgeInsets.symmetric(horizontal: 20),
+            padding: EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+            height: 60,
+            width: double.infinity,
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(25),
+              border: Border.all(
+                color: Color(0xFFE5E5E5),
+              ),
             ),
-            Container(
-              margin: EdgeInsets.symmetric(horizontal: 20),
-              padding: EdgeInsets.symmetric(vertical: 10, horizontal: 20),
-              height: 60,
-              width: double.infinity,
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(25),
-                border: Border.all(
-                  color: Color(0xFFE5E5E5),
+            child: Row(
+              children: <Widget>[
+                SvgPicture.asset("assets/icons/maps-and-flags.svg"),
+                SizedBox(width: 20),
+                Expanded(
+                  child: FutureBuilder(
+                    future: _cargarData(),
+                    builder: (context, snapshot){
+                      switch(snapshot.connectionState){
+                        case ConnectionState.none:
+                          // TODO: Handle this case.
+                          break;
+                        case ConnectionState.waiting:
+                          // TODO: Handle this case.
+                          break;
+                        case ConnectionState.active:
+                          // TODO: Handle this case.
+                          break;
+                        case ConnectionState.done:
+                          // TODO: Handle this case.
+                          return DropdownButton(
+                            items: paises,
+                            onChanged: (value) {
+                              setState(() {
+                                paisActual = value;
+                                var aux = dataCovid.singleWhere((data) => data.country == paisActual);
+                                infectados = aux.cases;
+                                muertes = aux.deaths;
+                                recuperados = aux.recovered;
+                                image = aux.flag;
+                              });
+                            },
+                            value: paisActual,
+                            isExpanded: false,
+                            underline: SizedBox(),
+                            hint: Text("Select"),
+                            icon: SvgPicture.asset("assets/icons/dropdown.svg"),
+                          );
+                          break;
+                      }
+                      return Container();
+                    },
+                  )
                 ),
-              ),
-              child: Row(
-                children: <Widget>[
-                  SvgPicture.asset("assets/icons/maps-and-flags.svg"),
-                  SizedBox(width: 20),
-                  Expanded(
-                    child: FutureBuilder(
-                      future: _cargarData(),
-                      builder: (context, snapshot){
-                        switch(snapshot.connectionState){
-                          case ConnectionState.none:
-                            // TODO: Handle this case.
-                            break;
-                          case ConnectionState.waiting:
-                            // TODO: Handle this case.
-                            break;
-                          case ConnectionState.active:
-                            // TODO: Handle this case.
-                            break;
-                          case ConnectionState.done:
-                            // TODO: Handle this case.
-                            return DropdownButton(
-                              items: paises,
-                              onChanged: (value) {
-                                setState(() {
-                                  paisActual = value;
-                                  var aux = dataCovid.singleWhere((data) => data.country == paisActual);
-                                  infectados = aux.cases;
-                                  muertes = aux.deaths;
-                                  recuperados = aux.recovered;
-                                  image = aux.flag;
-                                });
-                              },
-                              value: paisActual,
-                              isExpanded: false,
-                              underline: SizedBox(),
-                              hint: Text("Select"),
-                              icon: SvgPicture.asset("assets/icons/dropdown.svg"),
-                            );
-                            break;
-                        }
-                        return Container();
-                      },
-                    )
-                  ),
-                ],
-              ),
+              ],
             ),
-            SizedBox(height: 20),
-            Padding(
-              padding: EdgeInsets.symmetric(horizontal: 20),
-              child: Column(
-                children: <Widget>[
-                  Container(
-                    padding: EdgeInsets.all(20),
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(20),
-                      color: Colors.white,
-                      boxShadow: [
-                        BoxShadow(
-                          offset: Offset(0, 4),
-                          blurRadius: 30,
-                          color: kShadowColor,
-                        ),
-                      ],
-                    ),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: <Widget>[
-                        Counter(
-                          color: kInfectedColor,
-                          number: infectados,
-                          title: "Infectados",
-                        ),
-                        Counter(
-                          color: kDeathColor,
-                          number: muertes,
-                          title: "Muertes",
-                        ),
-                        Counter(
-                          color: kRecovercolor,
-                          number: recuperados,
-                          title: "Recuperados",
-                        ),
-                      ],
-                    ),
+          ),
+          SizedBox(height: 20),
+          Expanded(
+            child: ListView(
+              shrinkWrap: true,
+              children: <Widget>[
+                Container(
+                  padding: EdgeInsets.all(20),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(20),
+                    color: Colors.white,
+                    boxShadow: [
+                      BoxShadow(
+                        offset: Offset(0, 4),
+                        blurRadius: 30,
+                        color: kShadowColor,
+                      ),
+                    ],
                   ),
-                  Container(
-                    margin: EdgeInsets.only(top: 20),
-                    padding: EdgeInsets.all(20),
-                    height: 178,
-                    width: double.infinity,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(20),
-                      color: Colors.white,
-                      boxShadow: [
-                        BoxShadow(
-                          offset: Offset(0, 10),
-                          blurRadius: 30,
-                          color: kShadowColor,
-                        ),
-                      ],
-                    ),
-                    child: image.isNotEmpty ? Image.network(
-                      image,
-                    ) : Container()
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: <Widget>[
+                      Counter(
+                        color: kInfectedColor,
+                        number: infectados,
+                        title: "Infectados",
+                      ),
+                      Counter(
+                        color: kDeathColor,
+                        number: muertes,
+                        title: "Muertes",
+                      ),
+                      Counter(
+                        color: kRecovercolor,
+                        number: recuperados,
+                        title: "Recuperados",
+                      ),
+                    ],
                   ),
-                ],
-              ),
+                ),
+                Container(
+                  margin: EdgeInsets.only(top: 20),
+                  padding: EdgeInsets.all(20),
+                  height: 178,
+                  width: double.infinity,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(20),
+                    color: Colors.white,
+                    boxShadow: [
+                      BoxShadow(
+                        offset: Offset(0, 10),
+                        blurRadius: 30,
+                        color: kShadowColor,
+                      ),
+                    ],
+                  ),
+                  child: image.isNotEmpty ? Image.network(
+                    image,
+                  ) : Container()
+                ),
+              ],
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }

@@ -5,14 +5,11 @@ import 'package:http/http.dart' as http;
 class Consume {
   final String URL = "https://corona.lmao.ninja/v2/countries?sort=country";
   Future<List<DataCovid>> loadCountries() async {
-    print("EJECUTNADO");
     List<DataCovid> list = [];
     final response =
     await http.get(
         '${URL}',
     );
-    print("${response.statusCode}");
-    //print("${response.body}");
     if (response.statusCode == 200) {
       var jsonData = json.decode(response.body);
       for (var u in jsonData) {
